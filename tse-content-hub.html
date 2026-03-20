@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Service Edit · Content Hub</title>
+<!-- v2.1 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -91,7 +92,7 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 @keyframes dp{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
 
 /* OUTPUT */
-.out{display:flex;flex-direction:column;gap:18px;min-height:400px}
+.out{display:flex;flex-direction:column;gap:18px;min-height:400px;max-width:520px}
 .empty{background:rgba(255,255,255,.015);border:1px dashed rgba(255,255,255,.07);padding:80px 32px;text-align:center}
 .empty p{font-size:13px;color:rgba(255,255,255,.15);line-height:1.8}
 .ob{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);padding:22px}
@@ -113,7 +114,7 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 /* ========================================
    CARD TEMPLATES — 4:5 portrait
    ======================================== */
-.igc{width:100%;aspect-ratio:4/5;position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--fb);-webkit-font-smoothing:antialiased}
+.igc{width:100%;max-width:520px;aspect-ratio:4/5;position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--fb);-webkit-font-smoothing:antialiased}
 .igc.light{background:#FAFAF8}
 .igc.dark{background:#1C1917}
 
@@ -166,7 +167,7 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 .igc.photo-mode .cc-num{color:rgba(123,175,212,.08)}
 
 /* STORY 9:16 */
-.stc{width:100%;aspect-ratio:9/16;position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--fb);-webkit-font-smoothing:antialiased}
+.stc{width:100%;max-width:380px;aspect-ratio:9/16;position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--fb);-webkit-font-smoothing:antialiased}
 .stc.light{background:#FAFAF8}
 .stc.dark{background:#1C1917}
 .stc .photo-bg{position:absolute;inset:0;background-size:cover;background-position:center top;background-repeat:no-repeat}
