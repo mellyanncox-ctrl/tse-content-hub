@@ -241,6 +241,20 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
     </div>
     <button class="pz-clear" id="pz-clear" onclick="clearPhoto()">Remove photo</button>
 
+    <div class="sb-gl">API Key</div>
+    <div style="padding:0 20px 16px;">
+      <input type="password" id="api-key-input" placeholder="sk-ant-..." 
+        style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#FAFAF8;font-family:'DM Sans',sans-serif;font-size:12px;outline:none;border-radius:0;-webkit-appearance:none;"
+        oninput="localStorage.setItem('tse_api_key',this.value)">
+      <div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:6px;line-height:1.5;">Your key stays in your browser only. Never shared.</div>
+    </div>
+
+    <!-- API KEY -->
+    <div class="sb-gl">API Key</div>
+    <div style="padding:0 20px 16px;">
+      <input type="password" id="api-key-input" placeholder="sk-ant-..." style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--w);font-family:var(--fb);font-size:12px;outline:none;border-radius:0;" oninput="saveKey(this.value)">
+      <div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:6px;line-height:1.5;">Your Anthropic API key. Never shared or stored anywhere except your browser.</div>
+    </div>
     <div class="sb-gl">Create</div>
     <button class="nb on" id="nav-linkedin" onclick="go('linkedin')"><span class="ni">in</span>LinkedIn Post</button>
     <button class="nb" id="nav-carousel" onclick="go('carousel')"><span class="ni">▤</span>Instagram Carousel</button>
@@ -333,6 +347,8 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 
 <script>
 var TAB='linkedin', TONE='warm', STYLE='light';
+// Load saved API key
+window.addEventListener('load', function(){ var k=localStorage.getItem('tse_api_key'); if(k){ var inp=document.getElementById('api-key-input'); if(inp) inp.value=k; } });
 var SLIDES=[], SIDX=0, SD=null;
 var PHOTO_URL=null;
 
@@ -439,9 +455,20 @@ async function generate(){
   var ld=document.getElementById('ld');
   btn.disabled=true;ld.style.display='flex';
   try{
+    var apiKey = document.getElementById('api-key-input').value.trim();
+    if(!apiKey){ 
+      document.getElementById('out').innerHTML='<div class="empty"><p style="color:#e07070;">Please enter your Anthropic API key in the sidebar first.</p></div>';
+      btn.disabled=false;ld.style.display='none';
+      return;
+    }
     var res=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:buildPrompt()}]})
     });
     var d=await res.json();
@@ -814,14 +841,15 @@ async function dlWithPhoto(cardEl, filename){
 }
 </script>
 
-<div id="local-notice" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:#7BAFD4;color:#1C1917;padding:10px 24px;font-size:12px;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:space-between;gap:16px;">
-  <span><strong>Content generation needs a web server.</strong> Upload this file to Wasmer or Netlify to use Generate. You can still edit cards and download manually.</span>
-  <button onclick="document.getElementById('local-notice').style.display='none'" style="background:none;border:1px solid rgba(28,25,23,.3);padding:4px 12px;font-size:11px;cursor:pointer;font-family:inherit;color:#1C1917;">Dismiss</button>
-</div>
+
+
 <script>
-if(window.location.protocol === 'file:') {
-  document.getElementById('local-notice').style.display = 'flex';
-}
+// Load saved key from sessionStorage on page load
+window.addEventListener('load', function(){
+  var saved = sessionStorage.getItem('tse_api_key');
+  if(saved) document.getElementById('api-key-input').value = saved;
+});
+function saveKey(val){ sessionStorage.setItem('tse_api_key', val); }
 </script>
 </body>
 </html>
