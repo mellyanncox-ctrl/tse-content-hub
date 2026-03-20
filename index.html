@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Service Edit · Content Hub</title>
+<!-- v2.2 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -91,7 +92,7 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 @keyframes dp{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
 
 /* OUTPUT */
-.out{display:flex;flex-direction:column;gap:18px;min-height:400px}
+.out{display:flex;flex-direction:column;gap:18px;min-height:400px;max-width:520px}
 .empty{background:rgba(255,255,255,.015);border:1px dashed rgba(255,255,255,.07);padding:80px 32px;text-align:center}
 .empty p{font-size:13px;color:rgba(255,255,255,.15);line-height:1.8}
 .ob{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);padding:22px}
@@ -113,30 +114,30 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 /* ========================================
    CARD TEMPLATES — 4:5 portrait
    ======================================== */
-.igc{width:100%;aspect-ratio:4/5;position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--fb);-webkit-font-smoothing:antialiased}
+.igc{width:100%;max-width:520px;aspect-ratio:4/5;position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--fb);-webkit-font-smoothing:antialiased}
 .igc.light{background:#FAFAF8}
 .igc.dark{background:#1C1917}
 
 /* Photo overlay version */
-.igc .photo-bg{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat}
+.igc .photo-bg{position:absolute;inset:0;background-size:cover;background-position:center 20%;background-repeat:no-repeat}
 .igc .photo-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(17,17,16,.92) 0%,rgba(17,17,16,.6) 50%,rgba(17,17,16,.25) 100%)}
 .igc .photo-overlay.light-over{background:linear-gradient(to top,rgba(250,250,248,.95) 0%,rgba(250,250,248,.65) 50%,rgba(250,250,248,.2) 100%)}
 
 .igc .cc-bar{position:absolute;top:0;left:0;right:0;height:5px;background:#7BAFD4;z-index:3}
 .igc .cc-line{position:absolute;left:0;top:5px;bottom:0;width:4px;background:#7BAFD4;z-index:3}
 .igc .cc-body{position:absolute;bottom:62px;left:0;right:0;padding:32px 36px 28px 44px;display:flex;flex-direction:column;gap:16px;z-index:2}
-.igc .cc-eyebrow{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:#7BAFD4;font-weight:400}
+.igc .cc-eyebrow{font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:#7BAFD4;font-weight:400}
 .igc .cc-divider{width:36px;height:2px;background:#7BAFD4}
-.igc .cc-headline{font-family:var(--fd);font-size:clamp(22px,4vw,38px);font-weight:400;line-height:1.06;letter-spacing:-.01em}
+.igc .cc-headline{font-family:var(--fd);font-size:42px;font-weight:400;line-height:1.04;letter-spacing:-.01em}
 .igc .cc-headline em{font-style:italic;color:#7BAFD4}
-.igc .cc-copy{font-size:clamp(13px,2vw,16px);line-height:1.75;font-weight:300}
-.igc .cc-cta{font-size:10px;letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:9px}
+.igc .cc-copy{font-size:20px;line-height:1.7;font-weight:300}
+.igc .cc-cta{font-size:14px;letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:9px}
 .igc .cc-cta::before{content:'';display:block;width:22px;height:1.5px;background:#7BAFD4;flex-shrink:0}
 .igc .cc-footer{position:absolute;bottom:0;left:0;right:0;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 36px 0 44px;z-index:3}
 .igc .cc-brand{font-family:var(--fd);font-size:14px;font-weight:500}
 .igc .cc-brand em{font-style:italic}
 .igc .cc-right{font-size:10px;letter-spacing:.12em;text-transform:uppercase}
-.igc .cc-num{position:absolute;top:18px;right:22px;font-family:var(--fd);font-size:72px;font-weight:400;line-height:1;pointer-events:none;z-index:2}
+.igc .cc-num{position:absolute;top:20px;right:24px;font-family:var(--fd);font-size:90px;font-weight:400;line-height:1;pointer-events:none;z-index:2}
 
 /* LIGHT colours (no photo) */
 .igc.light .cc-headline{color:#111110}
@@ -166,7 +167,7 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 .igc.photo-mode .cc-num{color:rgba(123,175,212,.08)}
 
 /* STORY 9:16 */
-.stc{width:100%;aspect-ratio:9/16;position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--fb);-webkit-font-smoothing:antialiased}
+.stc{width:100%;max-width:380px;aspect-ratio:9/16;position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--fb);-webkit-font-smoothing:antialiased}
 .stc.light{background:#FAFAF8}
 .stc.dark{background:#1C1917}
 .stc .photo-bg{position:absolute;inset:0;background-size:cover;background-position:center top;background-repeat:no-repeat}
@@ -174,12 +175,12 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 .stc .cc-bar{position:absolute;top:0;left:0;right:0;height:5px;background:#7BAFD4;z-index:3}
 .stc .cc-line{position:absolute;left:0;top:5px;bottom:0;width:4px;background:#7BAFD4;z-index:3}
 .stc .cc-body{position:absolute;bottom:68px;left:0;right:0;padding:36px 40px 28px 48px;display:flex;flex-direction:column;gap:18px;z-index:2}
-.stc .cc-eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#7BAFD4;font-weight:400}
+.stc .cc-eyebrow{font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:#7BAFD4;font-weight:400}
 .stc .cc-divider{width:36px;height:2px;background:#7BAFD4}
-.stc .cc-headline{font-family:var(--fd);font-size:clamp(30px,6vw,52px);font-weight:400;line-height:1.04;letter-spacing:-.01em}
+.stc .cc-headline{font-family:var(--fd);font-size:52px;font-weight:400;line-height:1.04;letter-spacing:-.01em}
 .stc .cc-headline em{font-style:italic;color:#7BAFD4}
-.stc .cc-copy{font-size:clamp(14px,2.5vw,18px);line-height:1.75;font-weight:300}
-.stc .cc-cta{font-size:11px;letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:9px}
+.stc .cc-copy{font-size:22px;line-height:1.75;font-weight:300}
+.stc .cc-cta{font-size:14px;letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:9px}
 .stc .cc-cta::before{content:'';display:block;width:22px;height:1.5px;background:#7BAFD4;flex-shrink:0}
 .stc .cc-footer{position:absolute;bottom:0;left:0;right:0;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 40px 0 48px;z-index:3}
 .stc .cc-brand{font-family:var(--fd);font-size:15px;font-weight:500}
@@ -206,7 +207,7 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 
 /* PHOTO POST — 4:5 */
 .ppc{width:100%;aspect-ratio:4/5;position:relative;overflow:hidden;font-family:var(--fb);-webkit-font-smoothing:antialiased}
-.ppc .photo-bg{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat}
+.ppc .photo-bg{position:absolute;inset:0;background-size:cover;background-position:center 20%;background-repeat:no-repeat}
 .ppc .photo-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(17,17,16,.85) 0%,rgba(17,17,16,.3) 45%,transparent 100%)}
 .ppc .cc-bar{position:absolute;top:0;left:0;right:0;height:5px;background:#7BAFD4;z-index:3}
 .ppc .ppc-text{position:absolute;bottom:0;left:0;right:0;padding:28px 36px 26px 44px;z-index:2}
@@ -240,6 +241,26 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
       <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="loadPhoto(this)">
     </div>
     <button class="pz-clear" id="pz-clear" onclick="clearPhoto()">Remove photo</button>
+
+    <!-- FONT SIZE -->
+    <div class="sb-gl">Text size</div>
+    <div style="padding:0 20px 16px;display:flex;flex-direction:column;gap:10px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);">Headline</span>
+        <span style="font-size:12px;color:var(--acc);" id="hl-val">42px</span>
+      </div>
+      <input type="range" id="hl-size" min="20" max="80" value="42" style="width:100%;accent-color:var(--acc);" oninput="updateSizes()">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);">Body copy</span>
+        <span style="font-size:12px;color:var(--acc);" id="copy-val">20px</span>
+      </div>
+      <input type="range" id="copy-size" min="10" max="40" value="20" style="width:100%;accent-color:var(--acc);" oninput="updateSizes()">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);">Eyebrow / labels</span>
+        <span style="font-size:12px;color:var(--acc);" id="eye-val">15px</span>
+      </div>
+      <input type="range" id="eye-size" min="8" max="24" value="15" style="width:100%;accent-color:var(--acc);" oninput="updateSizes()">
+    </div>
 
     <!-- API KEY -->
     <div class="sb-gl">API Key</div>
@@ -309,6 +330,16 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
           </div>
         </div>
 
+        <div class="f" id="photo-pos-wrap" style="display:none">
+          <label class="fl">Photo position</label>
+          <select class="fs" id="photo-pos" onchange="updatePhotoPos()">
+            <option value="center 20%">Top — show face/upper body</option>
+            <option value="center center">Centre</option>
+            <option value="center 40%">Upper middle</option>
+            <option value="center 70%">Lower middle</option>
+            <option value="center bottom">Bottom</option>
+          </select>
+        </div>
         <div class="f" id="slides-wrap" style="display:none">
           <label class="fl">Number of slides</label>
           <select class="fs" id="scount">
@@ -338,6 +369,43 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 </div>
 
 <script>
+
+function updateSizes(){
+  var hl = document.getElementById('hl-size').value;
+  var copy = document.getElementById('copy-size').value;
+  var eye = document.getElementById('eye-size').value;
+
+  document.getElementById('hl-val').textContent = hl + 'px';
+  document.getElementById('copy-val').textContent = copy + 'px';
+  document.getElementById('eye-val').textContent = eye + 'px';
+
+  // Update all card headlines
+  document.querySelectorAll('.cc-headline').forEach(function(el){
+    el.style.fontSize = hl + 'px';
+  });
+  document.querySelectorAll('.cc-copy').forEach(function(el){
+    el.style.fontSize = copy + 'px';
+  });
+  document.querySelectorAll('.cc-eyebrow').forEach(function(el){
+    el.style.fontSize = eye + 'px';
+  });
+  document.querySelectorAll('.cc-cta').forEach(function(el){
+    el.style.fontSize = eye + 'px';
+  });
+
+  // Store for use when cards are regenerated
+  window.TSE_SIZES = { hl: hl, copy: copy, eye: eye };
+}
+
+function applyStoredSizes(){
+  if(window.TSE_SIZES){
+    document.querySelectorAll('.cc-headline').forEach(function(el){ el.style.fontSize = window.TSE_SIZES.hl + 'px'; });
+    document.querySelectorAll('.cc-copy').forEach(function(el){ el.style.fontSize = window.TSE_SIZES.copy + 'px'; });
+    document.querySelectorAll('.cc-eyebrow').forEach(function(el){ el.style.fontSize = window.TSE_SIZES.eye + 'px'; });
+    document.querySelectorAll('.cc-cta').forEach(function(el){ el.style.fontSize = window.TSE_SIZES.eye + 'px'; });
+  }
+}
+
 var TAB='linkedin', TONE='warm', STYLE='light';
 // Load saved API key
 
@@ -471,13 +539,13 @@ async function generate(){
     if(!d.content){ throw new Error('Unexpected response: '+JSON.stringify(d).substring(0,200)); }
     var raw=d.content&&d.content[0]&&d.content[0].text?d.content[0].text.trim():'';
     if(!raw){ throw new Error('Empty response received. Full response: '+JSON.stringify(d).substring(0,300)); }
-    if(TAB==='linkedin'){showCopy(raw,'LinkedIn Post','li-copy');}
+    if(TAB==='linkedin'){showCopy(raw,'LinkedIn Post','li-copy');setTimeout(applyStoredSizes,50);}
     else if(TAB==='photo'){showPhotoPost(raw);}
     else{
       var cleaned=raw.replace(/```json/g,'').replace(/```/g,'').trim();var j=JSON.parse(cleaned);
-      if(TAB==='carousel'){SD=j;SLIDES=j.slides;SIDX=0;showCarousel(j);}
-      else if(TAB==='story'){_sd=j;showStory(j);}
-      else if(TAB==='quote'){_qd=j;showQuote(j);}
+      if(TAB==='carousel'){SD=j;SLIDES=j.slides;SIDX=0;showCarousel(j);setTimeout(applyStoredSizes,50);}
+      else if(TAB==='story'){_sd=j;showStory(j);setTimeout(applyStoredSizes,50);}
+      else if(TAB==='quote'){_qd=j;showQuote(j);setTimeout(applyStoredSizes,50);}
     }
   }catch(e){
     var msg = e.message.indexOf('fetch') > -1
@@ -639,9 +707,9 @@ function drawSlide(){
   document.querySelectorAll('.sdot').forEach(function(d,i){d.classList.toggle('on',i===SIDX)});
 }
 
-function ps2(){if(SIDX>0){SIDX--;drawSlide();}}
-function ns2(){if(SIDX<SLIDES.length-1){SIDX++;drawSlide();}}
-function gos(i){SIDX=i;drawSlide();}
+function ps2(){if(SIDX>0){SIDX--;drawSlide();setTimeout(applyStoredSizes,50);}}
+function ns2(){if(SIDX<SLIDES.length-1){SIDX++;drawSlide();setTimeout(applyStoredSizes,50);}}
+function gos(i){SIDX=i;drawSlide();setTimeout(applyStoredSizes,50);}
 
 var _sd=null;
 function showStory(d){
