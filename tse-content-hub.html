@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Service Edit · Content Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --w:#FAFAF8;--off:#F4F2EE;--paper:#EDEAE3;--rule:#D8D4CC;
+  --mid:#9A9488;--wb:#1C1917;--blk:#111110;--acc:#7BAFD4;--acc2:#5a9bc4;
+  --fd:"Cormorant Garamond",serif;--fb:"DM Sans",sans-serif;
+}
+body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-webkit-font-smoothing:antialiased}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+
+/* SIDEBAR */
+.sb{background:#060503;border-right:1px solid rgba(255,255,255,0.05);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sb-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.05)}
+.sb-name{font-family:var(--fd);font-size:18px;color:var(--w)}
+.sb-name em{font-style:italic;color:var(--acc)}
+.sb-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.16);margin-top:5px}
+.sb-gl{padding:18px 20px 5px;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.16)}
+.nb{width:100%;padding:11px 20px;display:flex;align-items:center;gap:10px;font-size:13px;font-family:var(--fb);color:rgba(255,255,255,.38);cursor:pointer;border:none;background:none;border-left:2px solid transparent;transition:all .15s;text-align:left}
+.nb:hover{background:rgba(255,255,255,.03);color:rgba(255,255,255,.7)}
+.nb.on{background:rgba(123,175,212,.07);color:var(--acc);border-left-color:var(--acc)}
+.ni{font-size:12px;width:15px;flex-shrink:0;opacity:.6}
+.nb.on .ni{opacity:1}
+
+/* PHOTO UPLOAD */
+.photo-zone{margin:16px 20px;border:1px dashed rgba(123,175,212,.3);background:rgba(123,175,212,.04);cursor:pointer;transition:all .2s;position:relative}
+.photo-zone:hover{border-color:var(--acc);background:rgba(123,175,212,.08)}
+.photo-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.pz-inner{padding:14px 12px;text-align:center;pointer-events:none}
+.pz-icon{font-size:20px;margin-bottom:6px;color:var(--acc)}
+.pz-label{font-size:11px;color:rgba(255,255,255,.4);line-height:1.5}
+.pz-label strong{color:var(--acc);font-weight:500}
+.pz-preview{width:100%;aspect-ratio:1;object-fit:cover;display:none}
+.pz-clear{display:none;width:100%;padding:7px;font-family:var(--fb);font-size:11px;background:rgba(255,255,255,.04);border:none;border-top:1px solid rgba(255,255,255,.06);color:rgba(255,255,255,.35);cursor:pointer;letter-spacing:.08em;text-transform:uppercase;transition:all .15s}
+.pz-clear:hover{background:rgba(255,0,0,.08);color:rgba(255,100,100,.8)}
+
+.sb-foot{margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,255,255,.05)}
+.sb-foot p{font-size:11px;color:rgba(255,255,255,.14);line-height:1.6}
+
+/* MAIN */
+.main{display:flex;flex-direction:column}
+.topbar{padding:20px 36px;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.01)}
+.pt{font-family:var(--fd);font-size:30px;font-weight:400;color:var(--w);letter-spacing:-.01em}
+.pt em{font-style:italic;color:var(--acc)}
+.ps{font-size:12px;color:rgba(255,255,255,.2);margin-top:3px}
+
+.grid{padding:28px 36px;display:grid;grid-template-columns:320px 1fr;gap:24px;align-items:start}
+
+/* FORM */
+.fp{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);padding:22px;display:flex;flex-direction:column;gap:16px}
+.fp-lbl{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc)}
+.f{display:flex;flex-direction:column;gap:6px}
+.fl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.26)}
+.fi,.fs,.ft{width:100%;padding:11px 13px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);color:var(--w);font-family:var(--fb);font-size:13px;font-weight:300;outline:none;border-radius:0;-webkit-appearance:none;transition:border-color .2s}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--acc);background:rgba(123,175,212,.03)}
+.fs option{background:#1C1917}
+.ft{min-height:72px;resize:vertical;line-height:1.6}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.to{padding:9px 11px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.32);font-family:var(--fb);font-size:12px;cursor:pointer;transition:all .15s;text-align:left}
+.to:hover{border-color:rgba(255,255,255,.2);color:rgba(255,255,255,.7)}
+.to.on{border-color:var(--acc);background:rgba(123,175,212,.07);color:var(--acc)}
+.sr{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.so{padding:11px 13px;border:1px solid rgba(255,255,255,.08);cursor:pointer;font-family:var(--fb);font-size:12px;transition:all .15s;display:flex;align-items:center;gap:9px}
+.so.lv{background:var(--w);color:var(--wb)}
+.so.dv{background:var(--wb);color:var(--w);border-color:rgba(255,255,255,.1)}
+.so.on{box-shadow:0 0 0 2px var(--acc);border-color:var(--acc)}
+.sd{width:22px;height:16px;border-radius:2px;flex-shrink:0}
+.lv .sd{background:linear-gradient(120deg,#7BAFD4 45%,#EDEAE3 45%)}
+.dv .sd{background:linear-gradient(120deg,#7BAFD4 45%,#1C1917 45%)}
+.sn{font-size:13px;font-weight:500}
+.ss{font-size:10px;opacity:.4;text-transform:uppercase;letter-spacing:.06em}
+.hr{height:1px;background:rgba(255,255,255,.05)}
+.bg{width:100%;padding:15px;background:var(--acc);color:var(--wb);font-family:var(--fb);font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;border:none;cursor:pointer;transition:all .2s}
+.bg:hover{background:var(--acc2);color:var(--w)}
+.bg:disabled{opacity:.3;cursor:not-allowed}
+.ld{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--acc)}
+.ds{display:flex;gap:4px}
+.ds span{width:5px;height:5px;border-radius:50%;background:var(--acc);animation:dp 1.2s infinite}
+.ds span:nth-child(2){animation-delay:.2s}
+.ds span:nth-child(3){animation-delay:.4s}
+@keyframes dp{0%,80%,100%{opacity:.2;transform:scale(.8)}40%{opacity:1;transform:scale(1)}}
+
+/* OUTPUT */
+.out{display:flex;flex-direction:column;gap:18px;min-height:400px}
+.empty{background:rgba(255,255,255,.015);border:1px dashed rgba(255,255,255,.07);padding:80px 32px;text-align:center}
+.empty p{font-size:13px;color:rgba(255,255,255,.15);line-height:1.8}
+.ob{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);padding:22px}
+.oh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ol{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--acc)}
+.oa{display:flex;gap:7px}
+.bs{padding:7px 13px;font-family:var(--fb);font-size:11px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:rgba(255,255,255,.38);transition:all .15s}
+.bs:hover{border-color:var(--acc);color:var(--acc)}
+.bs.p{background:var(--acc);color:var(--wb);border-color:var(--acc)}
+.bs.p:hover{background:var(--acc2);color:var(--w)}
+.cb{font-size:15px;line-height:1.85;color:rgba(255,255,255,.7);font-weight:300;white-space:pre-wrap}
+.sn2{display:flex;align-items:center;justify-content:space-between;margin-top:13px}
+.sdots{display:flex;gap:6px}
+.sdot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.13);cursor:pointer;transition:background .2s}
+.sdot.on{background:var(--acc)}
+.bn{padding:7px 13px;background:transparent;border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.35);font-size:12px;cursor:pointer;transition:all .15s;font-family:var(--fb)}
+.bn:hover{border-color:rgba(255,255,255,.3);color:var(--w)}
+
+/* ========================================
+   CARD TEMPLATES — 4:5 portrait
+   ======================================== */
+.igc{width:100%;aspect-ratio:4/5;position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--fb);-webkit-font-smoothing:antialiased}
+.igc.light{background:#FAFAF8}
+.igc.dark{background:#1C1917}
+
+/* Photo overlay version */
+.igc .photo-bg{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat}
+.igc .photo-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(17,17,16,.92) 0%,rgba(17,17,16,.6) 50%,rgba(17,17,16,.25) 100%)}
+.igc .photo-overlay.light-over{background:linear-gradient(to top,rgba(250,250,248,.95) 0%,rgba(250,250,248,.65) 50%,rgba(250,250,248,.2) 100%)}
+
+.igc .cc-bar{position:absolute;top:0;left:0;right:0;height:5px;background:#7BAFD4;z-index:3}
+.igc .cc-line{position:absolute;left:0;top:5px;bottom:0;width:4px;background:#7BAFD4;z-index:3}
+.igc .cc-body{position:absolute;bottom:62px;left:0;right:0;padding:32px 36px 28px 44px;display:flex;flex-direction:column;gap:16px;z-index:2}
+.igc .cc-eyebrow{font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:#7BAFD4;font-weight:400}
+.igc .cc-divider{width:36px;height:2px;background:#7BAFD4}
+.igc .cc-headline{font-family:var(--fd);font-size:clamp(32px,4vw,44px);font-weight:400;line-height:1.06;letter-spacing:-.01em}
+.igc .cc-headline em{font-style:italic;color:#7BAFD4}
+.igc .cc-copy{font-size:clamp(16px,2vw,20px);line-height:1.75;font-weight:300}
+.igc .cc-cta{font-size:13px;letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:9px}
+.igc .cc-cta::before{content:'';display:block;width:22px;height:1.5px;background:#7BAFD4;flex-shrink:0}
+.igc .cc-footer{position:absolute;bottom:0;left:0;right:0;height:62px;display:flex;align-items:center;justify-content:space-between;padding:0 36px 0 44px;z-index:3}
+.igc .cc-brand{font-family:var(--fd);font-size:14px;font-weight:500}
+.igc .cc-brand em{font-style:italic}
+.igc .cc-right{font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.igc .cc-num{position:absolute;top:18px;right:22px;font-family:var(--fd);font-size:72px;font-weight:400;line-height:1;pointer-events:none;z-index:2}
+
+/* LIGHT colours (no photo) */
+.igc.light .cc-headline{color:#111110}
+.igc.light .cc-copy{color:#9A9488}
+.igc.light .cc-cta{color:#1C1917}
+.igc.light .cc-footer{background:#FAFAF8;border-top:1px solid #EDEAE3}
+.igc.light .cc-brand{color:#9A9488}
+.igc.light .cc-right{color:#D8D4CC}
+.igc.light .cc-num{color:rgba(123,175,212,.1)}
+
+/* DARK colours (no photo) */
+.igc.dark .cc-headline{color:#FAFAF8}
+.igc.dark .cc-copy{color:rgba(255,255,255,.42)}
+.igc.dark .cc-cta{color:rgba(255,255,255,.5)}
+.igc.dark .cc-footer{background:#1C1917;border-top:1px solid rgba(255,255,255,.06)}
+.igc.dark .cc-brand{color:rgba(255,255,255,.28)}
+.igc.dark .cc-right{color:rgba(255,255,255,.14)}
+.igc.dark .cc-num{color:rgba(123,175,212,.06)}
+
+/* PHOTO overlay colours (always light text) */
+.igc.photo-mode .cc-headline{color:#FAFAF8}
+.igc.photo-mode .cc-copy{color:rgba(255,255,255,.75)}
+.igc.photo-mode .cc-cta{color:rgba(255,255,255,.6)}
+.igc.photo-mode .cc-footer{background:rgba(17,17,16,.85);border-top:1px solid rgba(255,255,255,.08)}
+.igc.photo-mode .cc-brand{color:rgba(255,255,255,.35)}
+.igc.photo-mode .cc-right{color:rgba(255,255,255,.18)}
+.igc.photo-mode .cc-num{color:rgba(123,175,212,.08)}
+
+/* STORY 9:16 */
+.stc{width:100%;aspect-ratio:9/16;position:relative;overflow:hidden;display:flex;flex-direction:column;font-family:var(--fb);-webkit-font-smoothing:antialiased}
+.stc.light{background:#FAFAF8}
+.stc.dark{background:#1C1917}
+.stc .photo-bg{position:absolute;inset:0;background-size:cover;background-position:center top;background-repeat:no-repeat}
+.stc .photo-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(17,17,16,.95) 0%,rgba(17,17,16,.55) 55%,rgba(17,17,16,.15) 100%)}
+.stc .cc-bar{position:absolute;top:0;left:0;right:0;height:5px;background:#7BAFD4;z-index:3}
+.stc .cc-line{position:absolute;left:0;top:5px;bottom:0;width:4px;background:#7BAFD4;z-index:3}
+.stc .cc-body{position:absolute;bottom:68px;left:0;right:0;padding:36px 40px 28px 48px;display:flex;flex-direction:column;gap:18px;z-index:2}
+.stc .cc-eyebrow{font-size:15px;letter-spacing:.2em;text-transform:uppercase;color:#7BAFD4;font-weight:400}
+.stc .cc-divider{width:36px;height:2px;background:#7BAFD4}
+.stc .cc-headline{font-family:var(--fd);font-size:clamp(40px,6vw,60px);font-weight:400;line-height:1.04;letter-spacing:-.01em}
+.stc .cc-headline em{font-style:italic;color:#7BAFD4}
+.stc .cc-copy{font-size:clamp(18px,2.5vw,22px);line-height:1.75;font-weight:300}
+.stc .cc-cta{font-size:14px;letter-spacing:.16em;text-transform:uppercase;display:flex;align-items:center;gap:9px}
+.stc .cc-cta::before{content:'';display:block;width:22px;height:1.5px;background:#7BAFD4;flex-shrink:0}
+.stc .cc-footer{position:absolute;bottom:0;left:0;right:0;height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 40px 0 48px;z-index:3}
+.stc .cc-brand{font-family:var(--fd);font-size:15px;font-weight:500}
+.stc .cc-brand em{font-style:italic}
+.stc .cc-right{font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.stc.light .cc-headline{color:#111110}
+.stc.light .cc-copy{color:#9A9488}
+.stc.light .cc-cta{color:#1C1917}
+.stc.light .cc-footer{background:#FAFAF8;border-top:1px solid #EDEAE3}
+.stc.light .cc-brand{color:#9A9488}
+.stc.light .cc-right{color:#D8D4CC}
+.stc.dark .cc-headline{color:#FAFAF8}
+.stc.dark .cc-copy{color:rgba(255,255,255,.42)}
+.stc.dark .cc-cta{color:rgba(255,255,255,.5)}
+.stc.dark .cc-footer{background:#1C1917;border-top:1px solid rgba(255,255,255,.06)}
+.stc.dark .cc-brand{color:rgba(255,255,255,.28)}
+.stc.dark .cc-right{color:rgba(255,255,255,.14)}
+.stc.photo-mode .cc-headline{color:#FAFAF8}
+.stc.photo-mode .cc-copy{color:rgba(255,255,255,.78)}
+.stc.photo-mode .cc-cta{color:rgba(255,255,255,.6)}
+.stc.photo-mode .cc-footer{background:rgba(17,17,16,.88);border-top:1px solid rgba(255,255,255,.08)}
+.stc.photo-mode .cc-brand{color:rgba(255,255,255,.35)}
+.stc.photo-mode .cc-right{color:rgba(255,255,255,.18)}
+
+/* PHOTO POST — 4:5 */
+.ppc{width:100%;aspect-ratio:4/5;position:relative;overflow:hidden;font-family:var(--fb);-webkit-font-smoothing:antialiased}
+.ppc .photo-bg{position:absolute;inset:0;background-size:cover;background-position:center;background-repeat:no-repeat}
+.ppc .photo-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(17,17,16,.85) 0%,rgba(17,17,16,.3) 45%,transparent 100%)}
+.ppc .cc-bar{position:absolute;top:0;left:0;right:0;height:5px;background:#7BAFD4;z-index:3}
+.ppc .ppc-text{position:absolute;bottom:0;left:0;right:0;padding:28px 36px 26px 44px;z-index:2}
+.ppc .ppc-brand{font-family:var(--fd);font-size:13px;color:rgba(255,255,255,.4);margin-bottom:8px}
+.ppc .ppc-brand em{font-style:italic}
+.ppc .ppc-label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#7BAFD4;margin-bottom:4px}
+.ppc .cc-line{position:absolute;left:0;top:5px;bottom:0;width:4px;background:#7BAFD4;z-index:3}
+
+@media(max-width:1100px){.grid{grid-template-columns:1fr}}
+@media(max-width:768px){.app{grid-template-columns:1fr}.sb{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <div class="sb">
+    <div class="sb-logo">
+      <div class="sb-name">The <em>Service</em> Edit</div>
+      <div class="sb-sub">Content Hub</div>
+    </div>
+
+    <!-- PHOTO UPLOAD -->
+    <div class="sb-gl">Your photo</div>
+    <div class="photo-zone" id="pzone" onclick="document.getElementById('photo-input').click()">
+      <img id="pz-preview" class="pz-preview" alt="Your photo">
+      <div class="pz-inner" id="pz-inner">
+        <div class="pz-icon">+</div>
+        <div class="pz-label">Upload your photo<br><strong>Used on cover slides, stories and quote cards</strong></div>
+      </div>
+      <input type="file" id="photo-input" accept="image/*" style="display:none" onchange="loadPhoto(this)">
+    </div>
+    <button class="pz-clear" id="pz-clear" onclick="clearPhoto()">Remove photo</button>
+
+    <!-- API KEY -->
+    <div class="sb-gl">API Key</div>
+    <div style="padding:0 20px 16px;">
+      <input type="password" id="api-key-input" placeholder="sk-ant-..." style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--w);font-family:var(--fb);font-size:12px;outline:none;border-radius:0;" oninput="localStorage.setItem('tse_api_key',this.value)">
+      <div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:6px;line-height:1.5;">Your Anthropic API key. Never shared or stored anywhere except your browser.</div>
+    </div>
+    <div class="sb-gl">Create</div>
+    <button class="nb on" id="nav-linkedin" onclick="go('linkedin')"><span class="ni">in</span>LinkedIn Post</button>
+    <button class="nb" id="nav-carousel" onclick="go('carousel')"><span class="ni">▤</span>Instagram Carousel</button>
+    <button class="nb" id="nav-story" onclick="go('story')"><span class="ni">▯</span>Instagram Story</button>
+    <button class="nb" id="nav-quote" onclick="go('quote')"><span class="ni">"</span>Quote Card</button>
+    <button class="nb" id="nav-photo" onclick="go('photo')"><span class="ni">◻</span>Photo Post</button>
+
+    <div class="sb-foot"><p>Mel Cox · The Service Edit<br>Perth, WA · Australia-wide</p></div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="pt" id="pt">LinkedIn <em>Post</em></div>
+      <div class="ps" id="ps">Generate copy ready to paste and post</div>
+    </div>
+
+    <div class="grid">
+      <!-- FORM -->
+      <div class="fp">
+        <div class="fp-lbl">Settings</div>
+
+        <div class="f">
+          <label class="fl">Topic</label>
+          <textarea class="ft" id="topic" placeholder="e.g. Why your Google Business profile is costing you customers&#10;&#10;Leave blank for a suggested topic"></textarea>
+        </div>
+
+        <div class="f" id="type-wrap">
+          <label class="fl">Content type</label>
+          <select class="fs" id="ctype">
+            <option value="educational">Educational — teach something useful</option>
+            <option value="personal">Personal — your hospitality story</option>
+            <option value="proof">Proof — client work and results</option>
+            <option value="observation">Observation — something you noticed</option>
+            <option value="launch">Launch — announce The Service Edit</option>
+            <option value="invitation">Invitation — one spot available</option>
+            <option value="mythbusting">Myth busting — challenge a belief</option>
+          </select>
+        </div>
+
+        <div class="f">
+          <label class="fl">Tone</label>
+          <div class="tg">
+            <button class="to on" onclick="setTone(this,'warm')">Warm and personal</button>
+            <button class="to" onclick="setTone(this,'punchy')">Direct and punchy</button>
+            <button class="to" onclick="setTone(this,'edu')">Educational</button>
+            <button class="to" onclick="setTone(this,'hosp')">Hospitality angle</button>
+          </div>
+        </div>
+
+        <div class="f" id="style-wrap" style="display:none">
+          <label class="fl">Visual style</label>
+          <div class="sr">
+            <button class="so lv on" id="s-light" onclick="setStyle(this,'light')">
+              <div class="sd"></div><div><div class="sn">Light</div><div class="ss">Warm white</div></div>
+            </button>
+            <button class="so dv" id="s-dark" onclick="setStyle(this,'dark')">
+              <div class="sd"></div><div><div class="sn">Dark</div><div class="ss">Warm black</div></div>
+            </button>
+          </div>
+        </div>
+
+        <div class="f" id="slides-wrap" style="display:none">
+          <label class="fl">Number of slides</label>
+          <select class="fs" id="scount">
+            <option value="4">4 slides</option>
+            <option value="5" selected>5 slides</option>
+            <option value="6">6 slides</option>
+            <option value="7">7 slides</option>
+          </select>
+        </div>
+
+        <div class="f" id="photo-desc-wrap" style="display:none">
+          <label class="fl">Describe your photo (optional)</label>
+          <textarea class="ft" id="photo-desc" placeholder="e.g. Me behind the espresso machine at my cafe, morning light&#10;&#10;Leave blank to generate a general caption"></textarea>
+        </div>
+
+        <div class="hr"></div>
+        <button class="bg" id="btn-gen" onclick="generate()">Generate content</button>
+        <div class="ld" id="ld" style="display:none"><div class="ds"><span></span><span></span><span></span></div>Writing your content...</div>
+      </div>
+
+      <!-- OUTPUT -->
+      <div class="out" id="out">
+        <div class="empty"><p>Your content will appear here.<br>Choose your settings and hit generate.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var TAB='linkedin', TONE='warm', STYLE='light';
+// Load saved API key
+
+var SLIDES=[], SIDX=0, SD=null;
+var PHOTO_URL=null;
+
+var META={
+  linkedin:['LinkedIn <em>Post</em>','Generate copy ready to paste and post'],
+  carousel:['Instagram <em>Carousel</em>','4:5 portrait carousel with photo cover option'],
+  story:['Instagram <em>Story</em>','9:16 vertical story — full photo background with text'],
+  quote:['Quote <em>Card</em>','Pull quote card — your photo as background'],
+  photo:['Photo <em>Post</em>','Caption for your alternating grid photo posts']
+};
+
+// PHOTO UPLOAD
+function loadPhoto(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    PHOTO_URL = e.target.result;
+    var prev = document.getElementById('pz-preview');
+    prev.src = PHOTO_URL;
+    prev.style.display = 'block';
+    document.getElementById('pz-inner').style.display = 'none';
+    document.getElementById('pz-clear').style.display = 'block';
+    if (SLIDES.length) drawSlide();
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPhoto() {
+  PHOTO_URL = null;
+  document.getElementById('pz-preview').style.display = 'none';
+  document.getElementById('pz-inner').style.display = 'block';
+  document.getElementById('pz-clear').style.display = 'none';
+  document.getElementById('photo-input').value = '';
+  if (SLIDES.length) drawSlide();
+}
+
+function go(t) {
+  TAB=t;
+  document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('on')});
+  document.getElementById('nav-'+t).classList.add('on');
+  document.getElementById('pt').innerHTML=META[t][0];
+  document.getElementById('ps').textContent=META[t][1];
+  document.getElementById('style-wrap').style.display=t==='linkedin'?'none':'block';
+  document.getElementById('slides-wrap').style.display=t==='carousel'?'block':'none';
+  document.getElementById('type-wrap').style.display=t==='photo'?'none':'block';
+  document.getElementById('photo-desc-wrap').style.display=t==='photo'?'block':'none';
+  document.getElementById('out').innerHTML='<div class="empty"><p>Your content will appear here.<br>Choose your settings and hit generate.</p></div>';
+}
+
+function setTone(b,t){TONE=t;document.querySelectorAll('.to').forEach(function(x){x.classList.remove('on')});b.classList.add('on')}
+function setStyle(b,s){
+  STYLE=s;
+  document.querySelectorAll('.so').forEach(function(x){x.classList.remove('on')});
+  b.classList.add('on');
+  if(SLIDES.length) drawSlide();
+  var si=document.getElementById('story-inner');
+  if(si) refreshStory();
+  var qi=document.getElementById('quote-inner');
+  if(qi) refreshQuote();
+}
+
+var TONES={
+  warm:'warm and personal, like a trusted friend who knows the industry',
+  punchy:'direct and punchy with short declarative sentences and zero filler',
+  edu:'educational and practical, expert knowledge shared generously',
+  hosp:'drawing on 20+ years of personal hospitality experience and owning three cafes'
+};
+var TYPES={
+  educational:'Teach something genuinely useful the reader can act on immediately.',
+  personal:'Share a personal story from your hospitality years and how it connects to your digital work.',
+  proof:'Share a specific client result with real details and outcomes.',
+  observation:'Share an honest observation about what costs independent businesses customers online.',
+  launch:'Announce the launch of The Service Edit. Tell the story of why it exists.',
+  invitation:'Make a warm direct invitation. Mention one spot available this quarter.',
+  mythbusting:'Challenge a common belief about digital marketing for small businesses.'
+};
+
+function buildPrompt(){
+  var topic=document.getElementById('topic').value.trim();
+  var type=document.getElementById('ctype').value;
+  var n=document.getElementById('scount').value;
+  var pdesc=document.getElementById('photo-desc').value.trim();
+  var hasPhoto=!!PHOTO_URL;
+
+  var base='You are writing content for Mel Cox, founder of The Service Edit, Perth WA.\n\nMel: 3x cafe owner. 20+ years in hospitality. Now does digital audits ($595, 5 business days) and website builds (from $3,500) for independent businesses across Australia. Solo operator. Deliberately small client list. One spot available this quarter.\n\nVoice: '+TONES[TONE]+'. Always first person as Mel. Never use em dashes or en dashes. No corporate language. Real, warm and human.\n\nCore message: Most independent businesses are invisible online not because they are not good but because no one has ever set this up properly. Mel understands from the inside.\n\nCTAs: Free health check at link in bio. Book audit at theserviceedit.com.';
+
+  if(TAB==='linkedin') return base+'\n\nWRITE A LINKEDIN POST.\nContent: '+(TYPES[type]||'')+'\nTopic: '+(topic||'choose the most compelling topic for this content type')+'\n\nRules:\n- 180 to 280 words\n- Short paragraphs max 3 sentences\n- Hook first line must stop scrolling\n- Soft CTA at end\n- No hashtags, no emojis, no bullet points\n\nReturn only the post text.';
+
+  if(TAB==='carousel') return base+'\n\nWRITE A '+n+'-SLIDE INSTAGRAM CAROUSEL.\nContent: '+(TYPES[type]||'')+'\nTopic: '+(topic||'choose the best educational topic for independent business owners')+'\n'+(hasPhoto?'Note: Slide 1 will have a photo background so the headline needs to be very strong and standalone.\n':'')+'\nReturn JSON only:\n{\n  "pillar": "category e.g. Email Marketing",\n  "slides": [\n    { "num": 1, "headline": "Powerful hook max 7 words", "copy": "2 sentences of value" }\n  ],\n  "caption": "Instagram caption 80-120 words ending with CTA"\n}\n\nSlide 1 = hook. Last = CTA. Return valid JSON only.';
+
+  if(TAB==='story') return base+'\n\nWRITE AN INSTAGRAM STORY CARD.\nTopic: '+(topic||'a punchy useful tip for independent business owners')+'\n'+(hasPhoto?'Note: Your photo will fill the background so text must be short and high contrast.\n':'')+'\nReturn JSON only:\n{\n  "pillar": "short category",\n  "headline": "Punchy headline max 8 words",\n  "copy": "One powerful sentence max 16 words",\n  "cta": "CTA text max 6 words"\n}\n\nReturn valid JSON only.';
+
+  if(TAB==='quote') return base+'\n\nWRITE A PULL QUOTE.\nTopic: '+(topic||'a powerful truth about independent business and getting found online')+'\n\nReturn JSON only:\n{\n  "quote": "The quote. Powerful and specific. Max 18 words. Mel speaking directly.",\n  "context": "Optional one-line context max 8 words"\n}\n\nReturn valid JSON only.';
+
+  if(TAB==='photo') {
+    var desc=pdesc?'The photo shows: '+pdesc:'No photo description provided. Write a general warm caption that works with any photo of Mel.';
+    return base+'\n\nWRITE AN INSTAGRAM PHOTO POST CAPTION.\n'+desc+'\nContent type: '+type+'\n\nThis is the alternating real photo in Mel\'s grid. It should feel authentic, warm and personal. Not promotional.\n\nRules:\n- 80 to 150 words\n- Start with a personal hook\n- No hard sell\n- Soft CTA at end\n- No more than 5 relevant hashtags at the very end\n\nReturn only the caption text including hashtags.';
+  }
+}
+
+async function generate(){
+  var btn=document.getElementById('btn-gen');
+  var ld=document.getElementById('ld');
+  btn.disabled=true;ld.style.display='flex';
+  try{
+    var apiKey = document.getElementById('api-key-input').value.trim();
+    if(!apiKey){ 
+      document.getElementById('out').innerHTML='<div class="empty"><p style="color:#e07070;">Please enter your Anthropic API key in the sidebar first.</p></div>';
+      btn.disabled=false;ld.style.display='none';
+      return;
+    }
+    var res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:buildPrompt()}]})
+    });
+    var d=await res.json();
+    // Show full response for debugging
+    console.log('API response:', JSON.stringify(d));
+    // Handle API errors
+    if(d.error){ throw new Error('API error: '+d.error.type+' — '+d.error.message); }
+    if(!d.content){ throw new Error('Unexpected response: '+JSON.stringify(d).substring(0,200)); }
+    var raw=d.content&&d.content[0]&&d.content[0].text?d.content[0].text.trim():'';
+    if(!raw){ throw new Error('Empty response received. Full response: '+JSON.stringify(d).substring(0,300)); }
+    if(TAB==='linkedin'){showCopy(raw,'LinkedIn Post','li-copy');}
+    else if(TAB==='photo'){showPhotoPost(raw);}
+    else{
+      var cleaned=raw.replace(/```json/g,'').replace(/```/g,'').trim();var j=JSON.parse(cleaned);
+      if(TAB==='carousel'){SD=j;SLIDES=j.slides;SIDX=0;showCarousel(j);}
+      else if(TAB==='story'){_sd=j;showStory(j);}
+      else if(TAB==='quote'){_qd=j;showQuote(j);}
+    }
+  }catch(e){
+    var msg = e.message.indexOf('fetch') > -1
+      ? 'The content hub needs to run from a web server, not a local file.<br><br>Upload it to Wasmer or Netlify and open it from there — then generation will work.'
+      : 'Error: '+e.message+'<br>Please try again.';
+    document.getElementById('out').innerHTML='<div class="empty"><p style="color:#e07070;line-height:1.8;">'+msg+'</p></div>';
+  }
+  btn.disabled=false;ld.style.display='none';
+}
+
+function showCopy(text,label,id){
+  var h='<div class="ob"><div class="oh"><div class="ol">'+label+'</div>';
+  h+='<div class="oa"><button class="bs p" onclick="cp(\''+id+'\')">Copy</button><button class="bs" onclick="generate()">Regenerate</button></div></div>';
+  h+='<div class="cb" id="'+id+'">'+esc(text)+'</div></div>';
+  document.getElementById('out').innerHTML=h;
+}
+
+var PP_VARIANT = 0;
+var PP_TEXT = '';
+
+function showPhotoPost(text){
+  PP_TEXT = text;
+  PP_VARIANT = 0;
+  var h='<div class="ob"><div class="oh"><div class="ol">Photo Caption</div>';
+  h+='<div class="oa"><button class="bs p" onclick="cp(\'pp-cap\')">Copy caption</button><button class="bs" onclick="generate()">Regenerate</button></div></div>';
+  h+='<div class="cb" id="pp-cap">'+esc(text)+'</div></div>';
+
+  if(PHOTO_URL){
+    h+='<div class="ob"><div class="oh"><div class="ol">Choose your layout</div>';
+    h+='<div class="oa"><button class="bs p" id="pp-dl-btn" onclick="dlCard(\'pp-card-wrap\',\'photo-post.png\')">Download this layout</button></div></div>';
+
+    // Variant switcher tabs
+    h+='<div style="display:flex;gap:8px;margin-bottom:14px;">';
+    h+='<button class="bs p" id="ppv-0" onclick="setPPVariant(0)" style="flex:1;">Layout 1</button>';
+    h+='<button class="bs" id="ppv-1" onclick="setPPVariant(1)" style="flex:1;">Layout 2</button>';
+    h+='<button class="bs" id="ppv-2" onclick="setPPVariant(2)" style="flex:1;">Layout 3</button>';
+    h+='</div>';
+
+    h+='<div style="font-size:11px;color:rgba(255,255,255,.25);margin-bottom:8px;">Tip: click any text on the card to edit it before downloading.</div>';
+    h+='<div id="pp-card-wrap">'+buildPPVariant(text, 0)+'</div>';
+    h+='</div>';
+  } else {
+    h+='<div class="ob" style="background:rgba(123,175,212,.05);border-color:rgba(123,175,212,.15);padding:24px;text-align:center;">';
+    h+='<p style="font-size:13px;color:rgba(255,255,255,.35);">Upload your photo in the sidebar to preview visual layouts.</p></div>';
+  }
+
+  document.getElementById('out').innerHTML=h;
+}
+
+function setPPVariant(v){
+  PP_VARIANT = v;
+  document.querySelectorAll('[id^="ppv-"]').forEach(function(b,i){
+    b.className = i===v ? 'bs p' : 'bs';
+  });
+  document.getElementById('pp-card-wrap').innerHTML = buildPPVariant(PP_TEXT, v);
+}
+
+function buildPPVariant(text, v){
+  var lines = text.split('\n').filter(function(l){return l.trim().length>0;});
+  var headline = lines[0] ? lines[0].replace(/[#*]/g,'').trim() : '';
+  // No truncation — user can edit text directly on card
+  var sub = lines[1] ? lines[1].replace(/[#*]/g,'').trim() : '';
+  // No truncation on sub
+
+  // Layout 1 — text bottom, strong gradient, editorial
+  if(v===0){
+    return '<div class="igc photo-mode" id="pp-inner" style="font-family:\'DM Sans\',sans-serif;">'
+      +'<div class="photo-bg" style="background-image:url(\''+PHOTO_URL+'\')"></div>'
+      +'<div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(17,17,16,.97) 0%,rgba(17,17,16,.7) 55%,rgba(17,17,16,.15) 100%);z-index:1"></div>'
+      +'<div style="position:absolute;top:0;left:0;right:0;height:5px;background:#7BAFD4;z-index:3"></div>'
+      +'<div style="position:absolute;left:0;top:5px;bottom:68px;width:4px;background:#7BAFD4;z-index:3"></div>'
+      +'<div style="position:absolute;bottom:68px;left:0;right:0;padding:40px 48px 40px 52px;z-index:2;display:flex;flex-direction:column;gap:18px;">'
+      +'<div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#7BAFD4;">The Service Edit</div>'
+      +'<div style="width:32px;height:2px;background:#7BAFD4;"></div>'
+      +'<div contenteditable="true" style="outline:none;cursor:text;font-family:\'Cormorant Garamond\',serif;font-size:clamp(24px,4.2vw,40px);font-weight:400;line-height:1.08;color:#FAFAF8;letter-spacing:-.01em;">'+headline+'</div>'
+      +(sub?'<div contenteditable="true" style="outline:none;font-size:clamp(13px,2.2vw,17px);color:rgba(255,255,255,.7);font-weight:300;line-height:1.7;">'+sub+'</div>':'')
+      +'<div contenteditable="true" style="outline:none;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.6);display:flex;align-items:center;gap:8px;"><span style="display:block;width:18px;height:1.5px;background:#7BAFD4;flex-shrink:0;"></span>theserviceedit.com</div>'
+      +'</div>'
+
+      +'</div>';
+  }
+
+  // Layout 2 — headline top, photo centre, minimal chrome
+  if(v===1){
+    return '<div class="igc photo-mode" id="pp-inner" style="font-family:\'DM Sans\',sans-serif;">'
+      +'<div class="photo-bg" style="background-image:url(\''+PHOTO_URL+'\');background-position:center 30%"></div>'
+      +'<div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(17,17,16,.88) 0%,rgba(17,17,16,.15) 35%,rgba(17,17,16,.15) 65%,rgba(17,17,16,.82) 100%);z-index:1"></div>'
+      +'<div style="position:absolute;top:0;left:0;right:0;height:5px;background:#7BAFD4;z-index:3"></div>'
+      +'<div style="position:absolute;top:5px;left:0;right:0;padding:40px 44px 0 48px;z-index:2;">'
+      +'<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#7BAFD4;margin-bottom:12px;">The Service Edit</div>'
+      +'<div contenteditable="true" style="outline:none;font-family:\'Cormorant Garamond\',serif;font-size:clamp(32px,5.5vw,54px);font-weight:400;line-height:1.04;color:#FAFAF8;letter-spacing:-.01em;max-width:85%;">'+headline+'</div>'
+      +'</div>'
+      +'<div style="position:absolute;bottom:0;left:0;right:0;padding:28px 44px 32px 48px;z-index:2;">'
+      +(sub?'<div contenteditable="true" style="outline:none;font-size:clamp(16px,2.5vw,20px);color:rgba(255,255,255,.7);font-weight:300;line-height:1.65;margin-bottom:14px;">'+sub+'</div>':'')
+      +'<div style="display:flex;align-items:center;justify-content:space-between;">'
+      +'</div></div>'
+      +'</div>';
+  }
+
+  // Layout 3 — centred, big italic quote style
+  if(v===2){
+    return '<div class="igc photo-mode" id="pp-inner" style="font-family:\'DM Sans\',sans-serif;">'
+      +'<div class="photo-bg" style="background-image:url(\''+PHOTO_URL+'\')"></div>'
+      +'<div style="position:absolute;inset:0;background:rgba(17,17,16,.72);z-index:1"></div>'
+      +'<div style="position:absolute;top:0;left:0;right:0;height:5px;background:#7BAFD4;z-index:3"></div>'
+      +'<div style="position:absolute;bottom:0;left:0;right:0;height:5px;background:#7BAFD4;z-index:3"></div>'
+      +'<div style="position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:52px 48px;text-align:center;gap:22px;">'
+      +'<div style="font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#7BAFD4;">The Service Edit</div>'
+      +'<div style="width:32px;height:1.5px;background:#7BAFD4;"></div>'
+      +'<div contenteditable="true" style="outline:none;font-family:\'Cormorant Garamond\',serif;font-size:clamp(32px,6vw,56px);font-weight:400;line-height:1.08;color:#FAFAF8;letter-spacing:-.01em;font-style:italic;">\u201C'+headline+'\u201D</div>'
+      +'<div style="width:32px;height:1.5px;background:rgba(255,255,255,.2);"></div>'
+      +(sub?'<div contenteditable="true" style="outline:none;font-size:clamp(16px,2.5vw,20px);color:rgba(255,255,255,.65);font-weight:300;line-height:1.7;max-width:80%;">'+sub+'</div>':'')
+      +'</div>'
+      +'</div>';
+  }
+}
+
+function showCarousel(d){
+  var h='<div class="ob"><div class="oh"><div class="ol">Instagram Caption</div>';
+  h+='<div class="oa"><button class="bs p" onclick="cp(\'ig-cap\')">Copy caption</button><button class="bs" onclick="generate()">Regenerate</button></div></div>';
+  h+='<div class="cb" id="ig-cap">'+esc(d.caption)+'</div></div>';
+  h+='<div class="ob"><div class="oh"><div class="ol">Slide Preview</div>';
+  h+='<div class="oa"><button class="bs p" onclick="dlCard(\'slide-wrap\',\'slide-'+(SIDX+1)+'.png\')">Download slide</button></div></div>';
+  h+='<div id="slide-wrap"></div>';
+  h+='<div class="sn2"><button class="bn" onclick="ps2()">← Prev</button>';
+  h+='<div class="sdots" id="sdots">';
+  for(var i=0;i<d.slides.length;i++) h+='<div class="sdot'+(i===0?' on':'')+'" onclick="gos('+i+')"></div>';
+  h+='</div><button class="bn" onclick="ns2()">Next →</button></div></div>';
+  document.getElementById('out').innerHTML=h;
+  drawSlide();
+}
+
+function drawSlide(){
+  var s=SLIDES[SIDX];if(!s)return;
+  var total=SLIDES.length;
+  var isLast=SIDX===total-1;
+  var isCover=SIDX===0;
+  var usePhoto=PHOTO_URL&&isCover;
+  var st=STYLE;
+
+  var cls='igc '+(usePhoto?'photo-mode':st);
+  var h='<div class="'+cls+'" id="slide-inner">';
+  if(usePhoto){
+    h+='<div class="photo-bg" style="background-image:url(\''+PHOTO_URL+'\')"></div>';
+    h+='<div class="photo-overlay"></div>';
+  }
+  h+='<div class="cc-bar"></div><div class="cc-line"></div>';
+  if(!isLast) h+='<div class="cc-num">'+(SIDX+1)+'</div>';
+  h+='<div class="cc-body">';
+  if(isCover&&SD) h+='<div class="cc-eyebrow">'+SD.pillar+'</div>';
+  h+='<div class="cc-divider"></div>';
+  h+='<div class="cc-headline" contenteditable="true" style="outline:none;">'+s.headline+'</div>';
+  if(!usePhoto) h+='<div class="cc-copy">'+s.copy+'</div>';
+  if(isLast) h+='<div class="cc-cta">theserviceedit.com</div>';
+  h+='</div>';
+
+  h+='</div>';
+  document.getElementById('slide-wrap').innerHTML=h;
+  document.querySelectorAll('.sdot').forEach(function(d,i){d.classList.toggle('on',i===SIDX)});
+}
+
+function ps2(){if(SIDX>0){SIDX--;drawSlide();}}
+function ns2(){if(SIDX<SLIDES.length-1){SIDX++;drawSlide();}}
+function gos(i){SIDX=i;drawSlide();}
+
+var _sd=null;
+function showStory(d){
+  var h='<div class="ob"><div class="oh"><div class="ol">Story Card</div>';
+  h+='<div class="oa"><button class="bs p" onclick="dlCard(\'story-wrap\',\'story.png\')">Download</button><button class="bs" onclick="generate()">Regenerate</button></div></div>';
+  h+='<div id="story-wrap">'+buildStory(d,STYLE)+'</div></div>';
+  document.getElementById('out').innerHTML=h;
+}
+function buildStory(d,st){
+  var usePhoto=!!PHOTO_URL;
+  var cls='stc '+(usePhoto?'photo-mode':st);
+  var h='<div class="'+cls+'" id="story-inner">';
+  if(usePhoto){
+    h+='<div class="photo-bg" style="background-image:url(\''+PHOTO_URL+'\')"></div>';
+    h+='<div class="photo-overlay"></div>';
+  }
+  h+='<div class="cc-bar"></div><div class="cc-line"></div>';
+  h+='<div class="cc-body">';
+  h+='<div class="cc-eyebrow">'+d.pillar+'</div>';
+  h+='<div class="cc-divider"></div>';
+  h+='<div class="cc-headline">'+d.headline+'</div>';
+  h+='<div class="cc-copy">'+d.copy+'</div>';
+  h+='<div class="cc-cta">'+d.cta+'</div>';
+  h+='</div>';
+
+  h+='</div>';
+  return h;
+}
+function refreshStory(){if(_sd){document.getElementById('story-wrap').innerHTML=buildStory(_sd,STYLE);}}
+
+var _qd=null;
+function showQuote(d){
+  var h='<div class="ob"><div class="oh"><div class="ol">Quote</div>';
+  h+='<div class="oa"><button class="bs p" onclick="cp(\'q-text\')">Copy quote</button><button class="bs" onclick="generate()">Regenerate</button></div></div>';
+  h+='<div class="cb" id="q-text">'+esc(d.quote)+'</div></div>';
+  h+='<div class="ob"><div class="oh"><div class="ol">Quote Card</div>';
+  h+='<div class="oa"><button class="bs p" onclick="dlCard(\'quote-wrap\',\'quote.png\')">Download</button></div></div>';
+  h+='<div id="quote-wrap">'+buildQuote(d,STYLE)+'</div></div>';
+  document.getElementById('out').innerHTML=h;
+}
+function buildQuote(d,st){
+  var usePhoto=!!PHOTO_URL;
+  var cls='igc '+(usePhoto?'photo-mode':st);
+  var qs=usePhoto||st==='dark'
+    ?'font-family:"Cormorant Garamond",serif;font-size:clamp(22px,4vw,36px);font-weight:400;line-height:1.2;letter-spacing:-.01em;color:#FAFAF8;font-style:italic;'
+    :'font-family:"Cormorant Garamond",serif;font-size:clamp(22px,4vw,36px);font-weight:400;line-height:1.2;letter-spacing:-.01em;color:#111110;font-style:italic;';
+  var as=usePhoto||st==='dark'
+    ?'font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.12em;text-transform:uppercase;font-family:"DM Sans",sans-serif;'
+    :'font-size:11px;color:#9A9488;letter-spacing:.12em;text-transform:uppercase;font-family:"DM Sans",sans-serif;';
+  var cs=usePhoto||st==='dark'
+    ?'font-size:12px;color:rgba(255,255,255,.18);font-family:"DM Sans",sans-serif;font-weight:300;'
+    :'font-size:12px;color:#D8D4CC;font-family:"DM Sans",sans-serif;font-weight:300;';
+
+  var h='<div class="'+cls+'" id="quote-inner">';
+  if(usePhoto){
+    h+='<div class="photo-bg" style="background-image:url(\''+PHOTO_URL+'\')"></div>';
+    h+='<div class="photo-overlay"></div>';
+  }
+  h+='<div class="cc-bar"></div>';
+  h+='<div style="position:absolute;left:0;top:5px;bottom:0;width:4px;background:#7BAFD4;z-index:3;"></div>';
+  h+='<div style="position:absolute;inset:0;padding:40px 44px 40px 52px;display:flex;flex-direction:column;justify-content:center;gap:20px;z-index:2;">';
+  h+='<div class="cc-eyebrow">The Service Edit</div>';
+  h+='<div class="cc-divider"></div>';
+  h+='<div style="'+qs+'">\u201C'+d.quote+'\u201D</div>';
+  h+='<div style="'+as+'">Mel Cox, The Service Edit</div>';
+  if(d.context) h+='<div style="'+cs+'">'+d.context+'</div>';
+  h+='</div>';
+
+  h+='</div>';
+  return h;
+}
+function refreshQuote(){if(_qd){document.getElementById('quote-wrap').innerHTML=buildQuote(_qd,STYLE);}}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}
+
+function cp(id){
+  var el=document.getElementById(id);
+  if(!el)return;
+  navigator.clipboard.writeText(el.innerText);
+  var btn=event.target;
+  var o=btn.textContent;
+  btn.textContent='Copied!';
+  setTimeout(function(){btn.textContent=o;},1500);
+}
+
+async function dlCard(wrapId,filename){
+  var wrap=document.getElementById(wrapId);
+  if(!wrap)return;
+  var inner=wrap.querySelector('#pp-inner,.igc,.stc,.ppc');
+  if(!inner)return;
+  var btn=event.target;
+  btn.textContent='Preparing...';
+
+  try{
+    var bgColor = inner.classList.contains('dark') ? '#1C1917' : inner.classList.contains('photo-mode') ? '#1C1917' : '#FAFAF8';
+
+    // If photo card, draw photo manually then overlay text
+    if(PHOTO_URL && inner.classList.contains('photo-mode')){
+      await dlWithPhoto(inner, filename, bgColor);
+    } else {
+      // Try html2canvas first
+      try {
+        var c = await html2canvas(inner, {
+          scale: 3, useCORS: true, allowTaint: true,
+          backgroundColor: bgColor, logging: false,
+          imageTimeout: 0
+        });
+        triggerDownload(c.toDataURL('image/png'), filename);
+      } catch(e2) {
+        // Fallback to dom-to-image
+        var dataUrl = await domtoimage.toPng(inner, { width: inner.offsetWidth*3, height: inner.offsetHeight*3, style: { transform: 'scale(3)', transformOrigin: 'top left' } });
+        triggerDownload(dataUrl, filename);
+      }
+    }
+  }catch(e){
+    alert('Could not download automatically. Right-click the card image and choose Save As to save it manually.');
+  }
+  btn.textContent='Download';
+}
+
+function triggerDownload(dataUrl, filename){
+  var a = document.createElement('a');
+  a.download = filename;
+  a.href = dataUrl;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+async function dlWithPhoto(cardEl, filename){
+  // Get card dimensions
+  var rect=cardEl.getBoundingClientRect();
+  var scale=3;
+  var w=rect.width*scale;
+  var h=rect.height*scale;
+
+  var canvas=document.createElement('canvas');
+  canvas.width=w; canvas.height=h;
+  var ctx=canvas.getContext('2d');
+
+  // Draw photo background
+  var img=new Image();
+  img.src=PHOTO_URL;
+  await new Promise(function(res){img.onload=res;img.onerror=res;});
+
+  // Cover fill
+  var iw=img.naturalWidth, ih=img.naturalHeight;
+  var scale2=Math.max(w/iw, h/ih);
+  var dw=iw*scale2, dh=ih*scale2;
+  var dx=(w-dw)/2, dy=(h-dh)/2;
+  ctx.drawImage(img,dx,dy,dw,dh);
+
+  // Gradient overlay
+  var grad=ctx.createLinearGradient(0,h,0,0);
+  grad.addColorStop(0,'rgba(17,17,16,0.92)');
+  grad.addColorStop(0.5,'rgba(17,17,16,0.55)');
+  grad.addColorStop(1,'rgba(17,17,16,0.2)');
+  ctx.fillStyle=grad;
+  ctx.fillRect(0,0,w,h);
+
+  // Now draw the html2canvas layer (text/branding) on top
+  var overlay=await html2canvas(cardEl,{
+    scale:scale, useCORS:true, allowTaint:true,
+    backgroundColor:null, logging:false
+  });
+  ctx.drawImage(overlay,0,0);
+
+  triggerDownload(canvas.toDataURL('image/png'), filename);
+}
+</script>
+
+
+
+<script>
+// Load saved key from sessionStorage on page load
+window.addEventListener('load', function(){
+  var saved = localStorage.getItem('tse_api_key');
+  if(saved) document.getElementById('api-key-input').value = saved;
+});
+function saveKey(val){ localStorage.setItem('tse_api_key', val); }
+</script>
+</body>
+</html>
