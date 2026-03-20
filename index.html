@@ -241,18 +241,10 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
     </div>
     <button class="pz-clear" id="pz-clear" onclick="clearPhoto()">Remove photo</button>
 
-    <div class="sb-gl">API Key</div>
-    <div style="padding:0 20px 16px;">
-      <input type="password" id="api-key-input" placeholder="sk-ant-..." 
-        style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#FAFAF8;font-family:'DM Sans',sans-serif;font-size:12px;outline:none;border-radius:0;-webkit-appearance:none;"
-        oninput="localStorage.setItem('tse_api_key',this.value)">
-      <div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:6px;line-height:1.5;">Your key stays in your browser only. Never shared.</div>
-    </div>
-
     <!-- API KEY -->
     <div class="sb-gl">API Key</div>
     <div style="padding:0 20px 16px;">
-      <input type="password" id="api-key-input" placeholder="sk-ant-..." style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--w);font-family:var(--fb);font-size:12px;outline:none;border-radius:0;" oninput="saveKey(this.value)">
+      <input type="password" id="api-key-input" placeholder="sk-ant-..." style="width:100%;padding:10px 12px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:var(--w);font-family:var(--fb);font-size:12px;outline:none;border-radius:0;" oninput="localStorage.setItem('tse_api_key',this.value)">
       <div style="font-size:10px;color:rgba(255,255,255,.2);margin-top:6px;line-height:1.5;">Your Anthropic API key. Never shared or stored anywhere except your browser.</div>
     </div>
     <div class="sb-gl">Create</div>
@@ -348,7 +340,7 @@ body{background:#0A0804;color:var(--w);font-family:var(--fb);min-height:100vh;-w
 <script>
 var TAB='linkedin', TONE='warm', STYLE='light';
 // Load saved API key
-window.addEventListener('load', function(){ var k=localStorage.getItem('tse_api_key'); if(k){ var inp=document.getElementById('api-key-input'); if(inp) inp.value=k; } });
+
 var SLIDES=[], SIDX=0, SD=null;
 var PHOTO_URL=null;
 
@@ -472,7 +464,10 @@ async function generate(){
       body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:buildPrompt()}]})
     });
     var d=await res.json();
-    var raw=d.content&&d.content[0]?d.content[0].text.trim():'';
+    // Handle API errors
+    if(d.error){ throw new Error('API error: '+d.error.message); }
+    var raw=d.content&&d.content[0]&&d.content[0].text?d.content[0].text.trim():'';
+    if(!raw){ throw new Error('No content returned. Check your API key and try again.'); }
     if(TAB==='linkedin'){showCopy(raw,'LinkedIn Post','li-copy');}
     else if(TAB==='photo'){showPhotoPost(raw);}
     else{
@@ -846,10 +841,10 @@ async function dlWithPhoto(cardEl, filename){
 <script>
 // Load saved key from sessionStorage on page load
 window.addEventListener('load', function(){
-  var saved = sessionStorage.getItem('tse_api_key');
+  var saved = localStorage.getItem('tse_api_key');
   if(saved) document.getElementById('api-key-input').value = saved;
 });
-function saveKey(val){ sessionStorage.setItem('tse_api_key', val); }
+function saveKey(val){ localStorage.setItem('tse_api_key', val); }
 </script>
 </body>
 </html>
